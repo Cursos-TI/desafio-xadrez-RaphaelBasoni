@@ -1,16 +1,73 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
+// ------------------- Funções para Torre -------------------
+void imprimir_linha_torre(int linha, int coluna, int tamanho, int torre_linha, int torre_coluna) {
+	if (coluna >= tamanho) {
+		printf("\n");
+		return;
+	}
+	if (linha == torre_linha || coluna == torre_coluna)
+		printf("T ");
+	else
+		printf(". ");
+	imprimir_linha_torre(linha, coluna + 1, tamanho, torre_linha, torre_coluna);
+}
+
+void imprimir_tabuleiro_torre(int linha, int tamanho, int torre_linha, int torre_coluna) {
+	if (linha >= tamanho)
+		return;
+	imprimir_linha_torre(linha, 0, tamanho, torre_linha, torre_coluna);
+	imprimir_tabuleiro_torre(linha + 1, tamanho, torre_linha, torre_coluna);
+}
+
+// ------------------- Funções para Bispo -------------------
+void imprimir_linha_bispo(int linha, int coluna, int tamanho, int bispo_linha, int bispo_coluna) {
+	if (coluna >= tamanho) {
+		printf("\n");
+		return;
+	}
+	if ((linha - coluna == bispo_linha - bispo_coluna) || (linha + coluna == bispo_linha + bispo_coluna))
+		printf("B ");
+	else
+		printf(". ");
+	imprimir_linha_bispo(linha, coluna + 1, tamanho, bispo_linha, bispo_coluna);
+}
+
+void imprimir_tabuleiro_bispo(int linha, int tamanho, int bispo_linha, int bispo_coluna) {
+	if (linha >= tamanho)
+		return;
+	imprimir_linha_bispo(linha, 0, tamanho, bispo_linha, bispo_coluna);
+	imprimir_tabuleiro_bispo(linha + 1, tamanho, bispo_linha, bispo_coluna);
+}
+
+// ------------------- Funções para Rainha -------------------
+void imprimir_linha_rainha(int linha, int coluna, int tamanho, int rainha_linha, int rainha_coluna) {
+	if (coluna >= tamanho) {
+		printf("\n");
+		return;
+	}
+	if (linha == rainha_linha && coluna == rainha_coluna)
+		printf("R ");
+	else if (linha == rainha_linha || coluna == rainha_coluna || linha - coluna == rainha_linha - rainha_coluna || linha + coluna == rainha_linha + rainha_coluna)
+		printf("* ");
+	else
+		printf(". ");
+	imprimir_linha_rainha(linha, coluna + 1, tamanho, rainha_linha, rainha_coluna);
+}
+
+void imprimir_tabuleiro_rainha(int linha, int tamanho, int rainha_linha, int rainha_coluna) {
+	if (linha >= tamanho)
+		return;
+	imprimir_linha_rainha(linha, 0, tamanho, rainha_linha, rainha_coluna);
+	imprimir_tabuleiro_rainha(linha + 1, tamanho, rainha_linha, rainha_coluna);
+}
+
+// ------------------- Função Principal -------------------
 int main() {
-
-	// variaveis do menu (switch), do (p/ re-execução caso switch caia em default), e tamanho do tabuleiro.
-	// obs: variaveis das peças (linha/coluna de cada peça) estao nos 'case' para facilitar manupulação.
-
-	int opcao, valido = 0;
-	int linha = 0, coluna = 0, tamanho = 7;
-
-	// Menu de escolha
-
+	int opcao;
+	int tamanho = 7;
+	char continuar;
 	do {
 		printf("Menu de movimentos de pecas de xadrez:\n\n");
 		printf("1.Peao \n");
@@ -24,116 +81,65 @@ int main() {
 
 		switch (opcao) {
 		case 1:
-			// Movimento do peao - pendente
 			printf("Movimento do peao:\n");
 			printf("Em breve .... (ainda nao solicitado pelo professor)\n\n");
-			valido = 1;
 			break;
 
 		case 2:
-			// Movimento da torre (usando "for")
 			printf("Movimento da Torre:\n");
 			printf("Se move livremente na horizontal ou vertical\n\n");
-
-			int torre_linha = 3, torre_coluna = 3;
-
-
-			for (linha = 0; linha < tamanho; linha++) {
-				for (coluna = 0; coluna < tamanho; coluna++) {
-					if (linha == torre_linha || coluna == torre_coluna)
-						printf("T ");
-					else
-						printf(". ");
-				}
-				printf("\n");
-			}
-			valido = 1;
+			imprimir_tabuleiro_torre(0, tamanho, 3, 3);
 			break;
 
 		case 3:
-			// Movimento do cavalo (usando "for" para loop externo e "while" para loop interno)
 			printf("Movimento do cavalo:\n");
-			printf("Se move em 'L',\n");
-			printf("No exemplo a seguir: Baixo - baixo - baixo - esquerda\n\n");
+			printf("Se move em 'L': duas casas para cima e uma para a direita.\n\n");
+			for (int linha = 0; linha < tamanho; linha++) {
+				for (int coluna = 0; coluna < tamanho; coluna++) {
+					int valido_movimento = 0;
 
-			int linha_cavalo = 1;
-			int coluna_cavalo = 4;
+					if (linha == 4 && coluna == 2) {
+						printf("C ");
+						continue;
+					}
 
-			for (linha = 0; linha < tamanho; linha++) {
-				coluna = 0;  
-				for (int tempo = 0; tempo < 100000000; tempo++) {}
-				while (coluna < tamanho) {
-					if (linha == linha_cavalo && coluna == coluna_cavalo)
-						printf("C ");
-					else if (linha == linha_cavalo + 1 && coluna == coluna_cavalo)
-						printf("C ");
-					else if (linha == linha_cavalo + 2 && coluna == coluna_cavalo)
-						printf("C ");
-					else if (linha == linha_cavalo + 2 && coluna == coluna_cavalo - 1)
+					if (linha == 4 - 2 && coluna == 2 + 1)
+						valido_movimento = 1;
+
+					if (valido_movimento)
 						printf("C ");
 					else
 						printf(". ");
-					coluna++;
 				}
 				printf("\n");
 			}
-
-			valido = 1;
 			break;
 
-
 		case 4:
-			// Movimento do bispo (usando "while")
 			printf("Movimento do Bispo:\n");
 			printf("Se move livremente na diagonal\n\n");
-
-			while (linha < tamanho) {
-				int coluna = 0;
-				while (coluna < tamanho) {
-					if (coluna == linha)
-						printf("B ");
-					else
-						printf(". ");
-					coluna++;
-				}
-				printf("\n");
-				linha++;
-			}
-			valido = 1;
+			imprimir_tabuleiro_bispo(0, tamanho, 3, 3);
 			break;
 
 		case 5:
-			// Movimento da rainha (usando "do-while")
 			printf("Movimento da Rainha:\n");
-
-			do {
-				int coluna = 0, rainha_linha = 3, rainha_coluna = 3;
-				do {
-					if (linha == rainha_linha && coluna == rainha_coluna)
-						printf("R ");
-					else if (linha == rainha_linha || coluna == rainha_coluna || linha - coluna == rainha_linha - rainha_coluna || linha + coluna == rainha_linha + rainha_coluna)
-						printf("* ");
-					else
-						printf(". ");
-					coluna++;
-				} while (coluna < tamanho);
-
-				printf("\n");
-				linha++;
-			} while (linha < tamanho);
-			valido = 1;
+			imprimir_tabuleiro_rainha(0, tamanho, 3, 3);
 			break;
 
 		case 6:
-			// Movimento do rei - pendente
-
-			valido = 1;
+			printf("Movimento do Rei:\n");
+			printf("Em breve .... (ainda nao solicitado pelo professor)\n\n");
 			break;
 
 		default:
 			printf("Opcao Invalida!\n");
 			break;
 		}
-	} while (!valido);
+
+		printf("\nDeseja escolher outra peca? (S/N): ");
+		scanf(" %c", &continuar);
+
+	} while (continuar == 'S' || continuar == 's');
+
 	return 0;
 }
